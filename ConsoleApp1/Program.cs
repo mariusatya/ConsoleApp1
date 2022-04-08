@@ -11,8 +11,8 @@ namespace SExperiment
         public string honnan, hova;
         public TravelRoute(string s)
         {
-            this.honnan = "";
-            this.hova="";
+            //this.honnan = "";
+            // this.hova="";
         }
     }
 
@@ -23,7 +23,7 @@ namespace SExperiment
             string honnan = "";
             string hova = "";
             Console.WriteLine("Kérem adja meg honnan szeretne utazni: ");
-         honnan =  Console.ReadLine();
+            honnan = Console.ReadLine();
             Console.WriteLine("Kérem adja meg hova szeretne utazni: ");
             hova = Console.ReadLine();
 
@@ -38,18 +38,23 @@ namespace SExperiment
                 using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
                 {
 
-                    string json = "{ \"func\" : \"getRoutes\", \"params\" :{\"naptipus\":\"0\",\"datum\":\"2022-04-08\",\"honnan\":\"Mátészalka\",\"hova\":\"Nyírcsaholy\",\"hour\":\"0\",\"min\":\"0\",\"preferencia\":\"0\"}}";                     
+                    string json = "{ \"func\" : \"getRoutes\", \"params\" :{\"naptipus\":\"0\",\"datum\":\"2022-04-08\",\"honnan\":\"" + honnan + "\",\"hova\":\"" + hova + "\",\"hour\":\"0\",\"min\":\"0\",\"preferencia\":\"0\"}}";
                     streamWriter.Write(json);
                     streamWriter.Flush();
+
                 }
+
 
                 var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
                 using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
                 {
+
                     var responseText = streamReader.ReadToEnd();
-                 //   Console.WriteLine(responseText);
+                    //   Console.WriteLine(responseText);
                     var data = (JObject)JsonConvert.DeserializeObject(responseText);
-                    for (int i = 1; i < 40; i++)
+
+                   
+                    for (int i = 1; i < responseText.Length; i++)
                     {
                         var indulasihely = data["results"]["talalatok"][$"{i}"]["indulasi_hely"];
                         var erkezesihely = data["results"]["talalatok"][$"{i}"]["erkezesi_hely"];
@@ -57,14 +62,11 @@ namespace SExperiment
                         var indulasiido = data["results"]["talalatok"][$"{i}"]["erkezesi_ido"];
                         Console.WriteLine($"A busz/vonat {indulasiido}-kor indul {indulasihely}-ról");
                         Console.WriteLine($"A busz/vonat {erkezesiido}-kor érkezik {erkezesihely}-ra");
+
+
+
+
                     }
-                    
-
-                    
-
-
-                    //Now you have your response.
-                    //or false depending on information in the response     
                 }
             }
             catch (WebException ex)
